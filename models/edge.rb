@@ -11,4 +11,8 @@ class Edge
     source.add_outgoing_edge(self)
     destination.add_incoming_edge(self)
   end
+
+  def <=>(b)
+    @weight - b.weight
+  end
 end

@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 ruby '2.6.5'
 
 group :development, :test do
-  gem 'pry'
+  gem 'pry-byebug'
 end
 
 group :development do
