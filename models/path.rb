@@ -19,12 +19,13 @@ class Path
     @path + [destination]
   end
 
-  def <<(edge)
+  def add_hop(edge, weight)
     # Avoid adding source twice in the case of direct routes
     @path << edge.source if @path.last != edge.source
+    @weight = weight
   end
 
-  def <=>(b)
-    @weight - b.weight
+  def <=>(other)
+    @weight - other.weight
   end
 end

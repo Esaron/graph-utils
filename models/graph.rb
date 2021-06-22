@@ -21,7 +21,7 @@ class Graph
       # case-insensitive alphanumeric character
       graph.add_edge(source: graph.add_vertex(edge[0]),
                      destination: graph.add_vertex(edge[1]),
-                     weight: edge[2..-1].to_i)
+                     weight: edge[2..].to_i)
     end
     graph
   end
@@ -38,8 +38,8 @@ class Graph
     @vertices[id] ||=
       begin
         # Bust the Dijkstra cache so we aren't relying on
-        # a potentially stale cache
-        @shortest_paths = Hash.new({})
+        # a potentially stale data
+        bust_dijkstra_cache
         Vertex.new(id)
       end
   end
@@ -47,7 +47,7 @@ class Graph
   def add_edge(source:, destination:, weight:)
     @edges[edge_key(source, destination)] ||=
       begin
-        @shortest_paths = Hash.new({})
+        bust_dijkstra_cache
         Edge.new(source: source,
                  destination: destination,
                  weight: weight)
@@ -65,9 +65,9 @@ class Graph
 
   private
 
-  def dijkstra(source)
+  def dijkstra(source) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     vertex_set = Set.new(@vertices.values)
-    @vertices.values.each do |vertex|
+    @vertices.each_value do |vertex|
       @shortest_paths[source.id][vertex.id] =
         Path.new(source: source, destination: vertex)
     end
@@ -87,11 +87,14 @@ class Graph
       relevant_edges.each do |edge|
         weight = nearest.weight + edge.weight
         if weight < @shortest_paths[source.id][edge.destination.id].weight
-          @shortest_paths[source.id][edge.destination.id].weight = weight
-          @shortest_paths[source.id][edge.destination.id] << edge
+          @shortest_paths[source.id][edge.destination.id].add_hop(edge, weight)
         end
       end
     end
+  end
+
+  def bust_dijkstra_cache
+    @shortest_paths = Hash.new({})
   end
 
   def edge_key(source, destination)

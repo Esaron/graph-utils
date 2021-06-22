@@ -9,6 +9,5 @@ require_relative 'models/graph'
 GRAPH_FIXTURE = './config/graph.txt'
 
 graph = Graph.from_file(GRAPH_FIXTURE)
-puts graph.shortest_path('C', 'E').weight
-puts graph.shortest_path('C', 'E').path.map(&:id)
-
+puts graph.shortest_path('A', 'A').weight
+puts graph.shortest_path('A', 'A').path.map(&:id)

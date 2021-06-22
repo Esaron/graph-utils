@@ -1,0 +1,13 @@
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+Style/Documentation:
+  Exclude:
+    - '**/*.rb'
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*.rb
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - spec/**/*.rb

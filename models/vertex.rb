@@ -3,22 +3,21 @@
 class Vertex
   attr_reader :id, :incoming_edges, :outgoing_edges
 
-  def initialize(id, incoming_edges: [], outgoing_edges: [])
+  def initialize(id)
     @id = id
-    @incoming_edges = incoming_edges
-    @outgoing_edges = outgoing_edges
+    @incoming_edges = []
+    @outgoing_edges = []
   end
 
+  # Fluent, just because
   def add_incoming_edge(edge)
     @incoming_edges << edge
+    self
   end
 
   def add_outgoing_edge(edge)
     @outgoing_edges << edge
-  end
-
-  def get_outgoing_edge(destination_id)
-    @outgoing_edges.find { |edge| edge.destination.id == destination_id }
+    self
   end
 
   def hash
@@ -31,4 +30,8 @@ class Vertex
     @id == other.id
   end
   alias eql? ==
+
+  def to_s
+    @id.to_s
+  end
 end
