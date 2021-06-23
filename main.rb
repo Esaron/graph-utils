@@ -14,7 +14,8 @@ puts graph.distance('A', 'D')
 puts graph.distance('A', 'D', 'C')
 puts graph.distance('A', 'E', 'B', 'C', 'D')
 puts graph.distance('A', 'E', 'D')
+# count of routes from foo to bar with max baz hops
+# count of routes from foo to bar with exactly baz hops
 puts graph.shortest_path('A', 'C').weight
-puts graph.shortest_path('A', 'C').path.map(&:id)
 puts graph.shortest_path('B', 'B').weight
-puts graph.shortest_path('B', 'B').path.map(&:id)
+# count of routes from foo to bar with distance less than baz

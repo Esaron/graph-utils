@@ -30,7 +30,7 @@ class Graph
     @edges = {}
     @vertices = {}
     # Dijkstra cache
-    @shortest_paths = Hash.new({})
+    @shortest_paths = {}
   end
 
   def add_vertex(id)
@@ -84,6 +84,7 @@ class Graph
   end
 
   def initialize_paths(source)
+    @shortest_paths[source.id] ||= {}
     @vertices.each_value do |vertex|
       @shortest_paths[source.id][vertex.id] =
         Path.new(source: source, destination: vertex)
@@ -118,7 +119,7 @@ class Graph
   end
 
   def bust_dijkstra_cache
-    @shortest_paths = Hash.new({})
+    @shortest_paths = {}
   end
 
   def edge_key(source, destination)
