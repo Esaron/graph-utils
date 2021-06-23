@@ -30,7 +30,7 @@ class Graph
     @edges = {}
     @vertices = {}
     # Dijkstra cache
-    @shortest_paths = {}
+    bust_dijkstra_cache
   end
 
   def add_vertex(id)
@@ -78,8 +78,19 @@ class Graph
 
   private
 
-  def dijkstra(source)
+  def dijkstra(source, force_hops: true)
     initialize_paths(source)
+    populate_paths(source)
+    return unless force_hops
+
+    # This is less than ideal... In order to force recalculation of
+    # source-to-source paths, we just run the algorithm again after
+    # clearing out the source-to-source path. If I had some more time I'd
+    # optimize this, but I'm more focused on a working solution right now.
+    # Technically the same big O performance, although in practical terms
+    # it's 2x time.
+    @shortest_paths[source.id][source.id] =
+      Path.new(source: source, destination: source)
     populate_paths(source)
   end
 
