@@ -11,7 +11,7 @@ class Path
   def initialize(source:, destination:, weight: BigDecimal::INFINITY)
     @source = source
     @destination = destination
-    @path = [source]
+    @path = []
     @weight = weight
   end
 
@@ -19,9 +19,8 @@ class Path
     @path + [destination]
   end
 
-  def add_hop(edge, weight)
-    # Avoid adding source twice in the case of direct routes
-    @path << edge.source if @path.last != edge.source
+  def update(path, weight)
+    @path = path
     @weight = weight
   end
 

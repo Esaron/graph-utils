@@ -89,10 +89,11 @@ RSpec.describe Graph do
     end
 
     describe '#shortest_path' do
-      subject { graph.shortest_path(src_id, dest_id) }
+      subject { graph.shortest_path(src_id, dest_id, force_hops: force_hops) }
 
       let(:src_id) { 'A' }
       let(:dest_id) { 'C' }
+      let(:force_hops) { false }
 
       it 'returns the correct weight' do
         expect(subject.weight).to eq(9)
@@ -100,6 +101,31 @@ RSpec.describe Graph do
 
       it 'returns the correct path' do
         expect(subject.path.map(&:id)).to eq(%w[A B C])
+      end
+
+      context 'when pathing to and from the same vertex' do
+        let(:src_id) { 'B' }
+        let(:dest_id) { 'B' }
+
+        it 'returns 0 for the weight' do
+          expect(subject.weight).to eq(0)
+        end
+
+        it 'returns the correct path' do
+          expect(subject.path.map(&:id)).to eq(%w[B])
+        end
+
+        context 'when forcing hops' do
+          let(:force_hops) { true }
+
+          it 'returns the correct weight' do
+            expect(subject.weight).to eq(9)
+          end
+
+          it 'returns the correct path' do
+            expect(subject.path.map(&:id)).to eq(%w[B C E B])
+          end
+        end
       end
 
       context 'when a direct path is longer than an indirect one' do

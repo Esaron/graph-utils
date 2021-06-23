@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'pry-byebug'
 require 'digest'
 require 'set'
 
@@ -54,11 +55,11 @@ class Graph
       end
   end
 
-  def shortest_path(source_id, destination_id)
+  def shortest_path(source_id, destination_id, force_hops: false)
     cached_path = @shortest_paths.dig(source_id, destination_id)
     return cached_path if cached_path
 
-    dijkstra(@vertices[source_id])
+    dijkstra(@vertices[source_id], force_hops)
 
     @shortest_paths.dig(source_id, destination_id)
   end
@@ -78,7 +79,7 @@ class Graph
 
   private
 
-  def dijkstra(source, force_hops: true)
+  def dijkstra(source, force_hops)
     initialize_paths(source)
     populate_paths(source)
     return unless force_hops
@@ -123,9 +124,11 @@ class Graph
     end
     relevant_edges.each do |edge|
       weight = nearest.weight + edge.weight
-      if weight < @shortest_paths[source.id][edge.destination.id].weight
-        @shortest_paths[source.id][edge.destination.id].add_hop(edge, weight)
-      end
+      shorter = weight < @shortest_paths[source.id][edge.destination.id].weight
+      next unless shorter
+
+      prev = @shortest_paths[source.id][edge.source.id].path
+      @shortest_paths[source.id][edge.destination.id].update(prev, weight)
     end
   end
 

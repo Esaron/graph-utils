@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../models/path'
+require_relative '../../models/vertex'
 require 'pry-byebug'
 
 RSpec.describe Path do
@@ -17,8 +18,8 @@ RSpec.describe Path do
   describe '#path' do
     subject { path.path }
 
-    it 'returns the source and destination' do
-      expect(subject).to eq([src, dest])
+    it 'returns the destination only' do
+      expect(subject).to eq([dest])
     end
 
     context 'when another edge has been added' do
@@ -27,8 +28,7 @@ RSpec.describe Path do
       let(:edge_weight) { 1 }
 
       before do
-        path.add_hop(Edge.new(source: hop, destination: dest, weight: edge_weight),
-                     edge_weight)
+        path.update([src, hop], edge_weight)
       end
 
       it 'returns the full path' do
@@ -37,19 +37,17 @@ RSpec.describe Path do
     end
   end
 
-  describe '#add_hop' do
-    subject { path.add_hop(edge, edge_weight) }
+  describe '#update' do
+    subject { path.update(prev_path, edge_weight) }
 
-    let(:edge) do
-      Edge.new(source: hop, destination: dest, weight: edge_weight)
-    end
+    let(:prev_path) { [src, hop] }
     let(:hop_id) { 'A' }
     let(:hop) { Vertex.new(hop_id) }
     let(:edge_weight) { 1 }
 
     it 'updates the path' do
       expect { subject }.to change { path.path }
-        .from([src, dest])
+        .from([dest])
         .to([src, hop, dest])
     end
 
@@ -60,12 +58,12 @@ RSpec.describe Path do
     end
 
     context 'when the edge source matches the path source' do
-      let(:edge) do
-        Edge.new(source: src, destination: hop, weight: edge_weight)
-      end
+      let(:prev_path) { [src] }
 
-      it 'does not update the path (source is already there)' do
-        expect { subject }.not_to change { path.path }
+      it 'updates the path to include the source' do
+        expect { subject }.to change { path.path }
+          .from([dest])
+          .to([src, dest])
       end
 
       it 'updates the weight' do
