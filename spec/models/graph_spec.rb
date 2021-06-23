@@ -146,5 +146,24 @@ RSpec.describe Graph do
         end
       end
     end
+
+    describe '#distance' do
+      subject { graph.distance(src_id, *dest_ids) }
+
+      let(:src_id) { 'A' }
+      let(:dest_ids) { %w[B] }
+
+      it 'returns the distance between src and destination' do
+        expect(subject).to eq(5)
+      end
+
+      context 'with multiple hops' do
+        let(:dest_ids) { %w[B C D] }
+
+        it 'returns the distance between src and final destination' do
+          expect(subject).to eq(17)
+        end
+      end
+    end
   end
 end

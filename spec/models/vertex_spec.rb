@@ -29,6 +29,32 @@ RSpec.describe Vertex do
     end
   end
 
+  describe '#distance' do
+    subject { vertex.distance(other) }
+
+    let(:other) { Vertex.new(other_id) }
+    let(:other_id) { 'B' }
+
+    it 'raises a NoSuchRouteError' do
+      expect { subject }.to raise_error(Vertex::NoSuchRouteError)
+    end
+
+    context 'when there is a route to the other node' do
+      let(:edge) do
+        Edge.new(source: vertex, destination: other, weight: weight)
+      end
+      let(:weight) { 4 }
+
+      before do
+        vertex.add_outgoing_edge(edge)
+      end
+
+      it 'returns the weight of the edge' do
+        expect(subject).to eq(weight)
+      end
+    end
+  end
+
   describe '#hash' do
     subject { vertex.hash }
 

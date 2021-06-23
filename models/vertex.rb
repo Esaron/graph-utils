@@ -20,8 +20,17 @@ class Vertex
     self
   end
 
+  def distance(destination)
+    edge = @outgoing_edges.find do |outgoing|
+      outgoing.destination == destination
+    end
+    raise NoSuchRouteError if edge.nil?
+
+    edge.weight
+  end
+
   def hash
-    # We expect alphanumeric, case-insensitive ids,so we use base 36
+    # We expect alphanumeric, case-insensitive ids, so we use base 36
     # (digits + a-z)
     Integer(@id, 36)
   end
@@ -34,4 +43,6 @@ class Vertex
   def to_s
     @id.to_s
   end
+
+  NoSuchRouteError = Class.new(StandardError)
 end

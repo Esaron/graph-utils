@@ -38,7 +38,7 @@ class Graph
     @vertices[id] ||=
       begin
         # Bust the Dijkstra cache so we aren't relying on
-        # a potentially stale data
+        # potentially stale data
         bust_dijkstra_cache
         Vertex.new(id)
       end
@@ -63,32 +63,56 @@ class Graph
     @shortest_paths.dig(source_id, destination_id)
   end
 
+  def distance(source_id, *hop_ids)
+    source = @vertices[source_id]
+    prev = source
+    hop_ids.reduce(0) do |memo, hop_id|
+      hop = @vertices[hop_id]
+      memo += prev.distance(hop)
+      prev = hop
+      memo
+    end
+  rescue Vertex::NoSuchRouteError
+    'NO SUCH ROUTE'
+  end
+
   private
 
-  def dijkstra(source) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    vertex_set = Set.new(@vertices.values)
+  def dijkstra(source)
+    initialize_paths(source)
+    populate_paths(source)
+  end
+
+  def initialize_paths(source)
     @vertices.each_value do |vertex|
       @shortest_paths[source.id][vertex.id] =
         Path.new(source: source, destination: vertex)
     end
     @shortest_paths[source.id][source.id] =
       Path.new(source: source, destination: source, weight: 0)
+  end
 
+  def populate_paths(source)
+    vertex_set = Set.new(@vertices.values)
     until vertex_set.empty?
       relevant_paths = @shortest_paths[source.id].filter do |_k, v|
         vertex_set.include?(v.destination)
       end
       nearest = relevant_paths.values.min
-      destination = nearest.destination
-      vertex_set.delete(destination)
-      relevant_edges = destination.outgoing_edges.filter do |edge|
-        vertex_set.include?(edge.destination)
-      end
-      relevant_edges.each do |edge|
-        weight = nearest.weight + edge.weight
-        if weight < @shortest_paths[source.id][edge.destination.id].weight
-          @shortest_paths[source.id][edge.destination.id].add_hop(edge, weight)
-        end
+      calculate_hop(source, nearest, vertex_set)
+    end
+  end
+
+  def calculate_hop(source, nearest, vertex_set)
+    destination = nearest.destination
+    vertex_set.delete(destination)
+    relevant_edges = destination.outgoing_edges.filter do |edge|
+      vertex_set.include?(edge.destination)
+    end
+    relevant_edges.each do |edge|
+      weight = nearest.weight + edge.weight
+      if weight < @shortest_paths[source.id][edge.destination.id].weight
+        @shortest_paths[source.id][edge.destination.id].add_hop(edge, weight)
       end
     end
   end
