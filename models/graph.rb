@@ -49,9 +49,7 @@ class Graph
     @edges[edge_key(source, destination)] ||=
       begin
         bust_dijkstra_cache
-        Edge.new(source: source,
-                 destination: destination,
-                 weight: weight)
+        Edge.new(source: source, destination: destination, weight: weight)
       end
   end
 
@@ -120,6 +118,7 @@ class Graph
     end
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def calculate_hop(source, nearest, vertex_set)
     destination = nearest.destination
     vertex_set.delete(destination)
@@ -135,6 +134,7 @@ class Graph
       @shortest_paths[source.id][edge.destination.id].update(prev, weight)
     end
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   def bust_dijkstra_cache
     @shortest_paths = {}

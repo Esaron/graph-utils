@@ -40,6 +40,7 @@ class Vertex
   # of the requirements. There are too many arguments and the functionality
   # allowed by the block could be better implemented as options and/or more
   # specific method implementations.
+  # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
   def paths(destination_id,
             source: self,
             weight: 0,
@@ -73,6 +74,7 @@ class Vertex
 
     results
   end
+  # rubocop:enable Metrics/MethodLength, Metrics/ParameterLists
 
   def hash
     # We expect alphanumeric, case-insensitive ids, so we use base 36
