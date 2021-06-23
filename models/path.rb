@@ -8,10 +8,10 @@ class Path
   attr_reader :source, :destination
   attr_accessor :weight
 
-  def initialize(source:, destination:, weight: BigDecimal::INFINITY)
+  def initialize(source:, destination:, path: [], weight: BigDecimal::INFINITY)
     @source = source
     @destination = destination
-    @path = []
+    @path = path
     @weight = weight
   end
 

@@ -191,5 +191,56 @@ RSpec.describe Graph do
         end
       end
     end
+
+    describe '#paths' do
+      subject do
+        graph.paths(src_id, dest_id)
+             .map(&:path)
+             .map { |path| path.map(&:id) }
+      end
+
+      let(:src_id) { 'A' }
+      let(:dest_id) { 'B' }
+
+      let(:expected_paths) do
+        [%w[A B], %w[A D C E B], %w[A D E B], %w[A E B]]
+      end
+
+      it 'returns all paths from source to destination with unique vertices' do
+        expect(subject).to eq(expected_paths)
+      end
+
+      context 'with a path size limit' do
+        subject do
+          graph.paths(src_id, dest_id) { |path, _weight| path.size <= 2 }
+               .map(&:path)
+               .map { |path| path.map(&:id) }
+        end
+
+        let(:expected_paths) do
+          [%w[A B]]
+        end
+
+        it 'returns all paths from source to destination with <= 2 vertices' do
+          expect(subject).to eq(expected_paths)
+        end
+      end
+
+      context 'with a weight limit' do
+        subject do
+          graph.paths(src_id, dest_id) { |_path, weight| weight <= 10 }
+               .map(&:path)
+               .map { |path| path.map(&:id) }
+        end
+
+        let(:expected_paths) do
+          [%w[A B], %w[A E B]]
+        end
+
+        it 'returns all paths from source to destination with weight <= 10' do
+          expect(subject).to eq(expected_paths)
+        end
+      end
+    end
   end
 end

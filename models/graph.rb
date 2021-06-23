@@ -77,6 +77,10 @@ class Graph
     'NO SUCH ROUTE'
   end
 
+  def paths(source_id, destination_id, &block)
+    @vertices[source_id].paths(destination_id, &block)
+  end
+
   private
 
   def dijkstra(source, force_hops)
