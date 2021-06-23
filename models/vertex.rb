@@ -9,20 +9,16 @@ class Vertex
     @id = id
     @incoming_edges = []
     @outgoing_edges = []
-    @parents = nil
-    @children = nil
   end
 
   # Fluent, just because
   def add_incoming_edge(edge)
     @incoming_edges << edge
-    @parents = nil
     self
   end
 
   def add_outgoing_edge(edge)
     @outgoing_edges << edge
-    @children = nil
     self
   end
 
